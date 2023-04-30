@@ -14,8 +14,14 @@ void createStringArr(string * arr, string str, int &size){
             j++;
         }
         else{
-            arr[j] = str[i];
-            j++; i++;
+            if (str[i] == ' '){
+                i++;
+            }
+            else {
+                arr[j] = str[i];
+                j++;
+                i++;
+            }
         }
     }
     size = j;
@@ -100,11 +106,11 @@ void PrefixTraversal(node * x, string &s){
     PrefixTraversal(x -> right, s);
 }
 
-/* * *
+/* * * * *
 ID for Traversal Binary Tree
 ID = 1 : PostOrder
 ID = 2 : PreOrder
- * * */
+* * * * */
 
 void Traversal(tree myTree, string &s, int id){
     if (id == 1)
@@ -141,9 +147,106 @@ string Infix2Prefix(string input){
     return printResult;
 }
 
+string process(string oper4tor, string left, string right){
+    int left_hand = 0, right_hand = 0;
+    int res = 0;
+    if (left.size() == 1 && left[0] >= 48 && left[0] <= 57) left_hand = left[0] - '0';
+    else{
+        int n = left.size() - 1;
+        for (int i = 0; i <= n; i++){
+            if (i != n){
+                left_hand = left_hand + (left[i] - '0') * 10 * (n - i);
+            }
+            else left_hand = left_hand + (left[i] - '0');
+        }
+    }
+    if (right.size() == 1 && right[0] >= 48 && right[0] <= 57) right_hand = right[0] - '0';
+    else{
+        int n = right.size() - 1;
+        for (int i = 0; i <= n; i++){
+            if (i != n){
+                right_hand = right_hand + (right[0] - '0') * 10 * (n - i);
+            }
+            else right_hand = right_hand + (right[i] - '0');
+        }
+    }
+    if (oper4tor == "+") res = left_hand + right_hand;
+    else if (oper4tor == "-") res = left_hand - right_hand;
+    else if (oper4tor == "*") res = left_hand * right_hand;
+    else if (oper4tor == "/") res = left_hand / right_hand;
+    string final = to_string(res);
+    return final;
+}
+
+void Calculate_process(node *x, string &s){
+    if (x == nullptr) return;
+    Calculate_process(x -> left, s);
+    Calculate_process(x -> right, s);
+    if (x -> data == "+" || x -> data == "-" || x -> data == "*" || x -> data == "/" || x -> data == "^"){
+        s = process(x -> data, x -> left -> data, x -> right -> data);
+        delete x -> left;
+        delete x -> right;
+        x -> left = nullptr;
+        x -> right = nullptr;
+        x -> data = s;
+    }
+}
+
+string Calculator(tree myTree){
+    string s("");
+    Calculate_process(myTree.root, s);
+    return s;
+}
+
+string PostfixProcess(string input){
+    int size = 0;
+    string arr[input.size()];
+    createStringArr(arr, input, size);
+    stack <node*> node_stack;
+    stack <string> number_stack;
+    tree myTree;
+    for (int i = 0; i < size; i++){
+        if (arr[i] == "+" || arr[i] == "-" || arr[i] == "*" || arr[i] == "/" || arr[i] == "^"){
+            node * temp = init_data(arr[i]);
+            myTree.root = temp;
+            if (temp -> right == nullptr){
+                temp -> right = node_stack.top();
+                node_stack.pop();
+            }
+            if (temp -> left == nullptr){
+                temp -> left = node_stack.top();
+                node_stack.pop();
+            }
+            if (temp -> left != nullptr && temp -> right != nullptr){
+                node_stack.push(temp);
+            }
+        }
+        else{
+            node * temp = new node;
+            temp = init_data(arr[i]);
+            node_stack.push(temp);
+        }
+    }
+    cout << "DONE";
+    return Calculator(myTree);
+}
+
+void PrefixEvaluation(string input){
+    int size = input.size();
+}
+
+string PostfixPrefixCalculator(string input){
+    if (input[0] >= 48 || input[0] <= 57){
+        return PostfixProcess(input);
+    }
+    else{
+
+    }
+}
+
 void main_process(){
     string str, tempStr;
-    cin >> str;
+    /*cin >> str;
     tempStr = str;
     str = '(' + str + ')';
     string postfix, prefix;
@@ -151,5 +254,8 @@ void main_process(){
     prefix = Infix2Prefix(str);
     cout << "Infix: " << tempStr << endl;
     cout << "Postfix: " << postfix << endl;
-    cout << "Prefix: " << prefix << endl;
+    cout << "Prefix: " << prefix << endl;*/
+    getline(cin, str);
+    cout << PostfixPrefixCalculator(str);
+
 }
