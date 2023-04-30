@@ -22,6 +22,8 @@ struct tree{
     node * root;
 };
 
+/* * * Normal Notiation * * */
+
 node * init_data(string val);
 int getPriority(string s);
 bool pushConditionCheck(string s, stack <string> Stack);
@@ -33,6 +35,13 @@ void Traversal(tree myTree, string &s, int id);
 string Infix2Postfix(string input);
 string Infix2Prefix(string input);
 void createStringArr(string * arr, string st, int & size);
+void evaluateExpression();
 void main_process();
+
+/* * * Normal Notiation * * */
+
+/* * * Logic Notation * * */
+
+/* * * Logic Notation * * */
 
 #endif //DISCRETEMATHPROJ_EXPRESSION_TREE_H

@@ -149,7 +149,7 @@ void main_process(){
     string postfix, prefix;
     postfix = Infix2Postfix(str);
     prefix = Infix2Prefix(str);
-    cout << "Infix: " << str << endl;
+    cout << "Infix: " << tempStr << endl;
     cout << "Postfix: " << postfix << endl;
     cout << "Prefix: " << prefix << endl;
 }
