@@ -1,0 +1,3 @@
+/Users/tuananh/Desktop/DiscreteMathProj/cmake-build-debug/CMakeFiles/DiscreteMathProj.dir
+/Users/tuananh/Desktop/DiscreteMathProj/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/tuananh/Desktop/DiscreteMathProj/cmake-build-debug/CMakeFiles/rebuild_cache.dir

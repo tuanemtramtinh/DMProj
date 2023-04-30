@@ -1,0 +1,4 @@
+# ninja log v5
+0	497	1682826597905797977	CMakeFiles/DiscreteMathProj.dir/main.cpp.o	a719148c139067d3
+1	589	1682826597998566916	CMakeFiles/DiscreteMathProj.dir/expression_tree.cpp.o	ad3da0fe20091ab6
+589	635	1682826598046538400	DiscreteMathProj	4a2f761d4a931c0c
