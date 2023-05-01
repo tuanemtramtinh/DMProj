@@ -37,6 +37,14 @@ node * init_data(string val){
     tempNode -> right = nullptr;
     return tempNode;
 }
+
+node * init_num_data(long double val){
+    node * tempNode = new node;
+    tempNode -> number_data = val;
+    tempNode -> left = nullptr;
+    tempNode -> right = nullptr;
+    return tempNode;
+}
 //- - - Truyền dữ liệu vàp cây - - -//
 
 //- - - Sắp xếp độ ưu tiên cho các phép tính - - -//
@@ -165,99 +173,49 @@ string Infix2Prefix(string input){
     return printResult;
 }
 
-void convert_number(string s, long double &x){
-    int n = s.size() - 1;
-    int find = s.find('.');
-    for (int i = 0; i <= n; i++){
-        if (find > 0){
-            if (i < find){
-                if (i != find - 1) x = x + (s[i] - '0') * pow(10, find - 1 - i);
-                else x = x + (s[i] - '0');
-            }
-            else if (i >= find + 1){
-                x = x + (s[i] - '0') * pow(10, find - i);
-            }
-        }
-        else{
-            if (i != n) x = x + (s[i] - '0') * pow(10, n - i);
-            else x = x + (s[i] - '0');
-        }
-    }
-}
 
-string process(string oper4tor, string left, string right){
-    long double left_hand = 0, right_hand = 0;
-    long double res = 0;
-    if (left.size() == 1 && left[0] >= 48 && left[0] <= 57) left_hand = left[0] - '0';
-    else{
-        int n = left.size() - 1;
-        int find = left.find('.');
-        if (left[0] == '-'){
-            left.erase(0, 1);
-            convert_number(left, left_hand);
-            left_hand *= - 1;
-        }
-        else convert_number(left, left_hand);
-    }
-    if (right.size() == 1 && right[0] >= 48 && right[0] <= 57) right_hand = right[0] - '0';
-    else{
-        int n = right.size() - 1;
-        int find = right.find('.');
-        if (right[0] == '-'){
-            right.erase(0, 1);
-            convert_number(right, right_hand);
-            right_hand *= -1;
-        }
-        else convert_number(right, right_hand);
-    }
-    if (oper4tor == "+") res = left_hand + right_hand;
-    else if (oper4tor == "-") res = left_hand - right_hand;
-    else if (oper4tor == "*") res = left_hand * right_hand;
-    else if (oper4tor == "/") res = left_hand / right_hand;
-    else if (oper4tor == "^") res = pow(left_hand, right_hand);
-    //Để số sau khi chuyển đổi sang string không bị dư dấu . phẩy sau số nguyên
-    /* * *
-     Ví dụ 100 kiểu double nếu chuyển đổi sang string sẽ là 100.00000000 nên hàm này để ngăn không có
-     các số 0 không cần thiết xuất hiện
-     * * */
-    /////////////////////////////////////////////////
-    ostringstream oss;
-    oss << fixed << res;
-    string final ="";
-    if (int(res) == res){
-        final = oss.str();
-        int find = final.find('.');
-        string temp = final.substr(0, find);
-        final = temp;
-    }
-    else{
-        final = oss.str();
-        /*string temp = final.substr(0, final.size() - 2);
-        final = temp;*/
-    }
-
-    return final;
+long double _process(string oper4tor, long double left, long double right){
+    if (oper4tor == "+") return left + right;
+    if (oper4tor == "-") return left - right;
+    if (oper4tor == "*") return left * right;
+    if (oper4tor == "/") return left / right;
+    if (oper4tor == "^") return pow(left, right);
 }
 
 //Đệ quy Postorder Traversal để thực hiện tính toán các biểu thức Postfix và Prefix
-void Calculate_process(node *x, string &s){
+void Calculate_process(node *x, long double &res){
     if (x == nullptr) return;
-    Calculate_process(x -> left, s);
-    Calculate_process(x -> right, s);
+    Calculate_process(x -> left, res);
+    Calculate_process(x -> right, res);
     if (x -> data == "+" || x -> data == "-" || x -> data == "*" || x -> data == "/" || x -> data == "^"){
-        s = process(x -> data, x -> left -> data, x -> right -> data);
+        //s = process(x -> data, x -> left -> data, x -> right -> data);
+        x -> number_data = _process(x -> data, x -> left -> number_data, x -> right -> number_data);
+        res = x -> number_data;
         delete x -> left;
         delete x -> right;
         x -> left = nullptr;
         x -> right = nullptr;
-        x -> data = s;
     }
 }
 //Đệ quy Postorder Traversal để thực hiện tính toán các biểu thức Postfix và Prefix
 
 string Calculator(tree myTree){
     string s("");
-    Calculate_process(myTree.root, s);
+    long double res = 0;
+    Calculate_process(myTree.root, res);
+    ostringstream oss;
+    oss << fixed << setprecision(4) << res;
+    s = oss.str();
+    if (res == int(res)){
+        int pos = s.find('.');
+        string temp = s.substr(0, pos);
+        s = temp;
+    }
+    else{
+        int i = s.size() - 1;
+        while (s[i] == '0') i--;
+        s.erase(i + 1, s.size() - 1 - i);
+    }
     return s;
 }
 
@@ -268,7 +226,6 @@ string PostfixProcess(string input){
     string arr[input.size()];
     createStringArr(arr, input, size);
     stack <node*> node_stack;
-    stack <string> number_stack;
     tree myTree;
     for (int i = 0; i < size; i++){
         if (arr[i] == "+" || arr[i] == "-" || arr[i] == "*" || arr[i] == "/" || arr[i] == "^"){
@@ -288,7 +245,8 @@ string PostfixProcess(string input){
         }
         else{
             node * temp = new node;
-            temp = init_data(arr[i]);
+            long double x = stod(arr[i]);
+            temp = init_num_data(x);
             node_stack.push(temp);
         }
     }
@@ -297,17 +255,43 @@ string PostfixProcess(string input){
 
 /* * * - - -  Chuyển đổi biểu thức Postfix Notation thành Binary Tree - - - * * */
 
-void PrefixEvaluation(string input){
-    int size = input.size();
+string PrefixProcess(string input){
+    int size = 0;
+    string arr[input.size()];
+    createStringArr(arr, input, size);
+    stack <node*> node_stack;
+    tree myTree;
+    for (int i = size - 1; i >= 0; i--){
+        if (arr[i] == "+" || arr[i] == "-" || arr[i] == "*" || arr[i] == "/" || arr[i] == "^"){
+            node * temp = init_data(arr[i]);
+            myTree.root = temp;
+            if (temp -> left == nullptr){
+                temp -> left = node_stack.top();
+                node_stack.pop();
+            }
+            if (temp -> right == nullptr){
+                temp -> right = node_stack.top();
+                node_stack.pop();
+            }
+            if (temp -> left != nullptr && temp -> right != nullptr){
+                node_stack.push(temp);
+            }
+        }
+        else{
+            node * temp = new node;
+            long double x = stod(arr[i]);
+            temp = init_num_data(x);
+            node_stack.push(temp);
+        }
+    }
+    return Calculator(myTree);
 }
 
 string PostfixPrefixCalculator(string input){
-    if (input[0] >= 48 || input[0] <= 57){
+    if (input[0] >= 48 && input[0] <= 57){
         return PostfixProcess(input);
     }
-    else{
-
-    }
+    return PrefixProcess(input);
 }
 
 void main_process(){
@@ -321,9 +305,9 @@ void main_process(){
     cout << "Infix: " << tempStr << endl;
     cout << "Postfix: " << postfix << endl;
     cout << "Prefix: " << prefix << endl;
-    //getline(cin, str);
     string res = PostfixPrefixCalculator(postfix);
-    string temp = res.substr(0, res.size());
-    cout << "Result: " << temp;
+    cout << "Result: " << res << " (Postfix)" << endl;
+    res = PostfixPrefixCalculator(prefix);
+    cout << "Result: " << res << " (Prefix)";
 
 }

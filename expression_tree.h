@@ -16,6 +16,7 @@ using namespace std;
 
 struct node {
     string data;
+    long double number_data = 0;
     node * left;
     node * right;
 };
@@ -34,10 +35,11 @@ void tree_create(stack <node*> &node_stack, stack <string> &operator_stack, tree
 void infix2_tree(tree &myTree, stack <node*> &node_stack, stack <string> &operator_stack, string * arr, int size);
 
 /* * * Thực hiện các phép toán + - * / ^ * * */
-string process();
+long double _process(string oper4tor, long double left, long double right);
 void Calculate_process(node * x, string &s);
 string Calculator(tree myTree, int id);
 string PostfixProcess(string input);
+string PrefixProcess(string input);
 string PostfixPrefixCalculator(string input);
 /* * * Thực hiện các phép toán + - * / ^ * * */
 
