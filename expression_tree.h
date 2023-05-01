@@ -6,10 +6,12 @@
 #define DISCRETEMATHPROJ_EXPRESSION_TREE_H
 
 #include <iostream>
+#include <iomanip>
 #include <math.h>
 #include <string>
 #include <stack>
 #include <vector>
+#include <sstream>
 using namespace std;
 
 struct node {
